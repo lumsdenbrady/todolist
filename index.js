@@ -5,7 +5,7 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const app = express();
 
-let newItems =[];
+
 
 //mongodb connection
 mongoose.connect("mongodb://localhost:27017/todolist");
@@ -14,7 +14,7 @@ const toDoListSchema = new mongoose.Schema ({
   itemName: String
 });
 const toDoList = mongoose.model("ToDoList", toDoListSchema);
-retrieveDBItems();
+
 
 //server get and post request handling
 app.use(bodyParser.urlencoded({extended:true}));
@@ -33,13 +33,21 @@ let options = {
 let day = today.toLocaleDateString("en-US", options);
 //update newItems list from mongoose
 
+toDoList.find( function(err, items){
+if (err){
+  console.log(err);
+}else {
+items
+  items.forEach( (item) => console.log(item.itemName));
+  //use ejs to render the new list
+    res.render('list', {
+      kindOfDay: day,
+      userNewItems: items,
+    });
+}
+});
 
 
-//use ejs to render the new list
-  res.render('list', {
-    kindOfDay: day,
-    userNewItems: newItems,
-  });
 });
 app.post("/", function(req, res) {
 
@@ -50,7 +58,6 @@ addItem(newItem);
   //ugly fix to the issue of not having a real time update is a manual delay.
   // function timeout() {setTimeout(function(){retrieveDBItems(); res.redirect("/");}, 200)}
   // timeout();
-  retrieveDBItems();
    res.redirect("/");
 
 
@@ -66,23 +73,12 @@ app.listen(3000, function() {
 
 //functions
 async function addItem(newItem){
+  try{
   const item1 = new toDoList({
     itemName: newItem
   });
-   await item1.save().then()
-};
-
- function retrieveDBItems() {
-
-  toDoList.find( function(err, items){
-  if (err){
+  await  item1.save();
+  } catch (err){
     console.log(err);
-  }else {
-newItems = items
-    items.forEach( (item) => console.log(item.itemName));
-
-    return newItems;
   }
-});
-// mongoose.connection.close();
-}
+};
