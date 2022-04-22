@@ -1,75 +1,38 @@
-//jshin esversion: 6
+//jshint esversion: 6
 
 const express = require("express");
 const bodyParser = require("body-parser");
 
 const app = express();
 
+let newItems =[];
+
+app.use(bodyParser.urlencoded({extended:true}));
+app.use(express.static('public'));
 app.set('view engine', 'ejs');
 
 app.get("/", function(req, res) {
 
-  var today = new Date();
-  var day = "";
+  let today = new Date();
 
-  switch (today.getDay()) {
-    case 0: {
-      day = "Sunday";
+let options = {
+  weekday: "long",
 
-    }
-    break;
-  case 1: {
-    day = "Monday";
+};
+let day = today.toLocaleDateString("en-US", options);
 
-  }
-  break;
-  case 2: {
-    day = "Tuesday";
-
-  }
-  break;
-  case 3: {
-    day = "Wednesday";
-
-  }
-  break;
-  case 4: {
-    day = "Thursday";
-
-  }
-  break;
-  case 5: {
-    day = "Friday";
-
-  }
-  break;
-  case 6: {
-    day = "Saturday";
-
-  }
-  break;
-
-  default: console.log("error day is:" +today.getDay());
-
-  }
   res.render('list', {
-    kindOfDay: day
-  })
-
-
-  // if (today.getDay() === 6 || today.getDay() ===0){
-  //   day = "Weekend";
-  //   res.render('list', {kindOfDay: day})
-  //
-  // }else {
-  //   day = "Weekday"
-  //   res.render('list', {kindOfDay: day})
-  //
-  // }
-
-
+    kindOfDay: day,
+    userNewItems: newItems,
+  });
 });
+app.post("/", function(req, res) {
 
+let newItem = req.body.newItem;
+  newItems.push(newItem);
+  console.log(newItem);
+  res.redirect("/");
+});
 
 app.listen(3000, function() {
   console.log("server started on port 3000");
