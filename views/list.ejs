@@ -9,7 +9,7 @@
 
 <body>
   <div class="box" id="heading">
-    <h1> <%=kindOfDay%>'s grocery list!</h1>
+    <h1> <%=header%></h1>
   </div>
 
 
@@ -22,11 +22,15 @@
     </form>
 
     <% for (var i=0; i<userNewItems.length; i++) { %>
+<form  action="/delete" method="post">
+
+
     <div class="item">
-      <input type="checkbox">
+
+      <input type="checkbox" name= "value" value = "<%= userNewItems[i].itemName %>" onChange="this.form.submit()">
       <p> <%= userNewItems[i].itemName %></p>
     </div>
-
+</form>
     <% } %>
 
 
